@@ -6,9 +6,11 @@ import compression from "compression";
 import cors from "cors";
 import mongoose, { mongo } from "mongoose";
 import dotenv from "dotenv";
+import router from "./router";
 dotenv.config();
 
 const app = express();
+app.use(express.json());
 
 app.use(
   cors({
@@ -24,13 +26,9 @@ app.use(bodyParser.json());
 
 const server = http.createServer(app);
 
-// Just a simple route to test the server
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
-server.listen(8080, () => {
-  console.log("Server started on http://localhost:8080/");
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log("Server is running on http://localhost:8080/");
 });
 
 const MONGO_URL =
@@ -56,3 +54,5 @@ mongoose.connection.on("close", () => console.log("Disconnected from MongoDB"));
 mongoose.connection.on("reconnected", () =>
   console.log("Reconnected to MongoDB")
 );
+
+app.use("/", router);
