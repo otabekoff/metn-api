@@ -1,3 +1,13 @@
+### New Register Request
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+    "email": "bekky@metn.com",
+    "password": "12345678",
+    "username": "bekky"
+}
+
 ### Register Request
 POST http://localhost:8080/auth/register
 Content-Type: application/json
@@ -8,6 +18,16 @@ Content-Type: application/json
     "username": "otabek"
 }
 
+### New Login Request
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+    "email": "bekky@metn.com",
+    "password": "12345678"
+}
+
+
 ### Login Request
 POST http://localhost:8080/auth/login
 Content-Type: application/json
@@ -16,3 +36,32 @@ Content-Type: application/json
     "email": "otabek@metn.com",
     "password": "123456"
 }
+
+### Get All Users Request
+GET http://localhost:8080/users
+Content-Type: application/json
+
+### Remove Bekky Request
+DELETE http://localhost:8080/users/67ccb9ff7fc23051f6f7ef45
+Content-Type: application/json
+# Cookie: sessionToken=b4c1b3e4fbec925a0cdaafc7de758a66d2df118d8c90545f32115ab109d6ffea
+
+### Remove Otabek Request
+DELETE http://localhost:8080/users/otabek
+Content-Type: application/json
+
+### Update Otabek to Otabekoff Request
+PATCH http://localhost:8080/users/67ccb58c4d69e7867f967922
+Content-Type: application/json
+
+{
+    "username": "otabekoff"
+}
+
+
+
+# @no-cookie-jar
+### @no-cookie-jar Login Request
+# @no-cookie-jar
+GET http://localhost:8080/users
+Content-Type: application/json
