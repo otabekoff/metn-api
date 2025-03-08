@@ -1,3 +1,4 @@
+### Register Request
 POST http://localhost:8080/auth/register
 Content-Type: application/json
 
@@ -5,4 +6,13 @@ Content-Type: application/json
     "email": "otabek@metn.com",
     "password": "123456",
     "username": "otabek"
+}
+
+### Login Request
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+    "email": "otabek@metn.com",
+    "password": "123456"
 }
