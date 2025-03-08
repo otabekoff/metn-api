@@ -1,48 +1,38 @@
-import { Request, Response } from "express";
-import { createUser, getUserByEmail } from "../db/users";
-import { hashPassword } from "../helpers";
-import Joi from "joi";
+import express from "express";
+import { getUserByEmail, createUser } from "../db/users";
+import { random, authentication } from "../helpers";
 
-const registerSchema = Joi.object({
-  email: Joi.string().email().max(50).required(),
-  password: Joi.string().min(6).max(50).required(),
-  username: Joi.string().min(3).max(20).required(),
-});
-
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const register = async (
+  req: express.Request,
+  res: express.Response
+): Promise<any> => {
   try {
-    // Validate request body using Joi
-    const { error, value } = registerSchema.validate(req.body);
-    if (error) {
-      res.status(400).json({ error: error.details[0].message });
-      return;
+    const { email, password, username } = req.body;
+
+    if (!email || !password || !username) {
+      return res.status(400).send("Missing required fields");
     }
 
-    const { email, password, username } = value;
-
-    // Check if user already exists
     const existingUser = await getUserByEmail(email);
+
     if (existingUser) {
-      res.status(400).json({ error: "Email already exists" });
-      return;
+      return res.status(400).send("Email already exists");
     }
 
-    // Hash the password
-    const hashedPassword = await hashPassword(password);
+    const salt = random();
 
-    // Create new user
     const user = await createUser({
       email,
       username,
-      authentication: { password: hashedPassword },
+      authentication: {
+        salt,
+        password: authentication(salt, password),
+      },
     });
 
-    // Send success response
-    res
-      .status(201)
-      .json({ id: user._id, email: user.email, username: user.username });
+    return res.status(200).json(user).end();
   } catch (error) {
-    console.error("Register Error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error(error);
+    return res.sendStatus(400);
   }
 };
