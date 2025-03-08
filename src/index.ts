@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import compression from "compression";
 import cors from "cors";
 import mongoose, { mongo } from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 
