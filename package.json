@@ -1,0 +1,27 @@
+{
+  "name": "metn-api",
+  "version": "0.0.1",
+  "description": "METN (MongoDB, Express, TypeScript and NodeJS API) project.",
+  "keywords": [],
+  "homepage": "https://github.com/otabekoff/metn-api#readme",
+  "bugs": {
+    "url": "https://github.com/otabekoff/metn-api/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/otabekoff/metn-api.git"
+  },
+  "license": "MIT",
+  "author": "Otabek Sadiridinov <sadiridinovotabek@gmail.com>",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
