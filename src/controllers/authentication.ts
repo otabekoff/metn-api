@@ -1,24 +1,17 @@
 import express from "express";
-import bcrypt from "bcrypt";
-import Joi from "joi";
 import { getUserByEmail, createUser } from "../db/users";
+import { random, authentication } from "../helpers";
 
 export const login = async (
   req: express.Request,
   res: express.Response
 ): Promise<any> => {
   try {
-    const schema = Joi.object({
-      email: Joi.string().email().required(),
-      password: Joi.string().min(6).required(),
-    });
-
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).send(error.details[0].message);
-    }
-
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).send("Missing required fields");
+    }
 
     const user = await getUserByEmail(email).select(
       "+authentication.salt +authentication.password"
@@ -28,14 +21,17 @@ export const login = async (
       return res.status(400).send("User not found");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.authentication.password);
+    const expectedHash = authentication(user.authentication.salt, password);
 
-    if (!isPasswordValid) {
+    if (user.authentication.password !== expectedHash) {
       return res.status(403).send("Invalid password");
     }
 
-    const salt = await bcrypt.genSalt(10);
-    user.authentication.sessionToken = await bcrypt.hash(user._id.toString(), salt);
+    const salt = random();
+    user.authentication.sessionToken = authentication(
+      salt,
+      user._id.toString()
+    );
 
     await user.save();
 
@@ -58,18 +54,11 @@ export const register = async (
   res: express.Response
 ): Promise<any> => {
   try {
-    const schema = Joi.object({
-      email: Joi.string().email().required(),
-      password: Joi.string().min(6).required(),
-      username: Joi.string().min(3).required(),
-    });
-
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).send(error.details[0].message);
-    }
-
     const { email, password, username } = req.body;
+
+    if (!email || !password || !username) {
+      return res.status(400).send("Missing required fields");
+    }
 
     const existingUser = await getUserByEmail(email);
 
@@ -77,15 +66,14 @@ export const register = async (
       return res.status(400).send("Email already exists");
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = random();
 
     const user = await createUser({
       email,
       username,
       authentication: {
         salt,
-        password: hashedPassword,
+        password: authentication(salt, password),
       },
     });
 
